@@ -25,6 +25,7 @@ public class ProgressBarBuilder {
     private long processed = 0;
     private Duration elapsed = Duration.ZERO;
     private int maxRenderedLength = -1;
+    private boolean dynamicDataSizeSpeedUnit = false;
 
     public ProgressBarBuilder() { }
 
@@ -99,6 +100,11 @@ public class ProgressBarBuilder {
         return this;
     }
 
+    public ProgressBarBuilder dynamicDataSizeSpeedUnit() {
+        this.dynamicDataSizeSpeedUnit = true;
+        return this;
+    }
+
     public ProgressBar build() {
         return new ProgressBar(
                 task,
@@ -107,7 +113,9 @@ public class ProgressBarBuilder {
                 continuousUpdate,
                 processed,
                 elapsed,
-                new DefaultProgressBarRenderer(style, unitName, unitSize, showSpeed, speedFormat, speedUnit),
+                dynamicDataSizeSpeedUnit?
+                        new DynamicSpeedUnitProgressBarRenderer(style, unitName, unitSize, showSpeed, speedFormat, speedUnit, null):
+                        new DefaultProgressBarRenderer(style, unitName, unitSize, showSpeed, speedFormat, speedUnit),
                 consumer == null ? Util.createConsoleConsumer(maxRenderedLength) : consumer
         );
     }
